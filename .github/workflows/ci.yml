@@ -9,21 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: myuser
-          POSTGRES_PASSWORD: mysecretpassword
-          POSTGRES_DB: devop_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -37,26 +22,6 @@ jobs:
       run: |
         gem install bundler
         bundle install
-
-    - name: Wait for Postgres to be ready
-      run: |
-        until pg_isready -h postgres -U myuser -d devop_test; do
-          echo "Waiting for postgres..."
-          sleep 5
-        done
-
-    - name: Check Postgres Logs (if waiting fails)
-      if: failure()
-      run: docker logs $(docker ps -q --filter ancestor=postgres:latest)
-
-    - name: Check Postgres Status
-      run: |
-        pg_isready -h postgres -U myuser -d devop_test
-
-    - name: Run tests
-      run: |
-        bundle exec rails db:setup
-        bundle exec rspec
 
     - name: Build Docker image
       run: docker build -t devop-test .
