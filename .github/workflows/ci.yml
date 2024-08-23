@@ -26,8 +26,13 @@ jobs:
     - name: Build Docker image
       run: docker build -t devop-test .
 
-    - name: Push Docker image to DockerHub
+    - name: Run container
       run: |
-        echo "${{ secrets.DOCKERHUB_USERNAME }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-        docker tag devop-test ${{ secrets.DOCKERHUB_USERNAME }}/devop-test:latest
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/devop-test:latest
+        docker run --name devop-test-container -d devop-test
+        docker exec devop-test-container bundle exec rails db:setup
+        docker exec devop-test-container bundle exec rspec
+
+    - name: Stop and remove container
+      run: |
+        docker stop devop-test-container
+        docker rm devop-test-container
