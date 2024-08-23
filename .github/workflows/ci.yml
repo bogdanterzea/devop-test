@@ -18,8 +18,11 @@ jobs:
       with:
         ruby-version: 3.0.2
 
-    - name: Robocop check
-      run: robocop
+    - name: Install Rubocop
+      run: gem install rubocop
+
+    - name: Rubocop check
+      run: rubocop
 
     - name: Build Docker image
       run: docker build -t ghcr.io/${{ github.repository }}/devop-test:latest
