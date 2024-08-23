@@ -21,6 +21,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
     - name: Checkout code
@@ -35,6 +37,17 @@ jobs:
       run: |
         gem install bundler
         bundle install
+
+    - name: Wait for Postgres to be ready
+      run: |
+        until pg_isready -h postgres -U myuser -d devop_test_test; do
+          echo "Waiting for postgres..."
+          sleep 5
+        done
+
+    - name: Check Postgres Status
+      run: |
+        pg_isready -h postgres -U myuser -d devop_test_test
 
     - name: Run tests
       run: |
