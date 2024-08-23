@@ -33,6 +33,15 @@ jobs:
         docker exec devop-test-container bundle exec rspec
 
     - name: Stop and remove container
+      if: always()
       run: |
         docker stop devop-test-container
         docker rm devop-test-container
+
+    - name: Tag Docker image
+      run: docker tag devop-test ghcr.io/${{ github.repository }}/devop-test:latest
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        docker push ghcr.io/${{ github.repository }}/devop-test:latest
