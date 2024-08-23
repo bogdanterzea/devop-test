@@ -45,6 +45,10 @@ jobs:
           sleep 5
         done
 
+    - name: Check Postgres Logs (if waiting fails)
+      if: failure()
+      run: docker logs $(docker ps -q --filter ancestor=postgres:latest)
+
     - name: Check Postgres Status
       run: |
         pg_isready -h postgres -U myuser -d devop_test
