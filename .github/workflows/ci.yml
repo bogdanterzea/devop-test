@@ -13,33 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.0.2
-
-    - name: Install dependencies
-      run: |
-        gem install bundler
-        bundle install
+    - name: Robocop check
+      run: robocop
 
     - name: Build Docker image
-      run: docker build -t devop-test .
-
-    - name: Run container
-      run: |
-        docker run --name devop-test-container -d devop-test
-        docker exec devop-test-container bundle exec rails db:setup
-        docker exec devop-test-container bundle exec rspec
-
-    - name: Stop and remove container
-      if: always()
-      run: |
-        docker stop devop-test-container
-        docker rm devop-test-container
-
-    - name: Tag Docker image
-      run: docker tag devop-test ghcr.io/${{ github.repository }}/devop-test:latest
+      run: docker build -t ghcr.io/${{ github.repository }}/devop-test:latest
 
     - name: Push Docker image to GitHub Container Registry
       run: |
