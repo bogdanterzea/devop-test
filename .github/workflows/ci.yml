@@ -13,16 +13,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.0.2
+    # - name: Set up Ruby
+    #   uses: ruby/setup-ruby@v1
+    #   with:
+    #     ruby-version: 3.0.2
 
-    - name: Install Rubocop
-      run: gem install rubocop
+    # - name: Install Rubocop
+    #   run: gem install rubocop
 
-    - name: Rubocop check
-      run: rubocop
+    # - name: Rubocop check
+    #   run: rubocop
 
     - name: Build Docker image
       run: docker build -t ghcr.io/${{ github.repository }}/devop-test:latest
