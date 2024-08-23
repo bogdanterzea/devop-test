@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 3.0.2
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+
+    - name: Run tests
+      run: |
+        bundle exec rails db:setup
+        bundle exec rspec
+
+    - name: Build Docker image
+      run: docker build -t devop-test .
+
+    - name: Push Docker image to DockerHub
+      run: |
+        echo "${{ secrets.DOCKERHUB_USERNAME }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        docker tag devop-test ${{ secrets.DOCKERHUB_USERNAME }}/devop-test:latest
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/devop-test:latest
