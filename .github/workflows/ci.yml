@@ -25,9 +25,9 @@ jobs:
     #   run: rubocop
 
     - name: Build Docker image
-      run: docker build -t ghcr.io/${{ github.repository }}/devop-test:latest .
+      run: docker build -t ghcr.io/${{ github.repository }}:latest .
 
     - name: Push Docker image to GitHub Container Registry
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        docker push ghcr.io/${{ github.repository }}/devop-test:latest
+        docker push ghcr.io/${{ github.repository }}:latest
