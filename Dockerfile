@@ -14,6 +14,9 @@ RUN bundle exec rake assets:precompile || echo "Skipping precompile"
 
 ENV RAILS_ENV=development
 
+COPY docker-entrypoint.sh /usr/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+
 EXPOSE 3000
 
 CMD ["rails", "s", "-b", "0.0.0.0"]
